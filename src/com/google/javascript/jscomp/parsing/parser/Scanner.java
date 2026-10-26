@@ -1009,9 +1009,13 @@ public class Scanner {
         case '`':
           return result;
         case '\\':
-          // There might be multiple errors. Take the first one but continue scanning
+          // There might be multiple errors. Take the first one but continue scanning. An error
+          // replaces an earlier warning, so the token is still marked as having an invalid escape.
           SkipTemplateCharactersResult newError = skipTemplateLiteralEscapeSequence();
-          if (newError != null && !result.hasError()) {
+          if (newError != null
+              && (!result.hasError()
+                  || (result.getErrorLevel() == ErrorLevel.WARNING
+                      && newError.getErrorLevel() == ErrorLevel.ERROR))) {
             result = newError;
           }
           break;

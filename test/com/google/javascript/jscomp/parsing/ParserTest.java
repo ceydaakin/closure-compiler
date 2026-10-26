@@ -5284,11 +5284,16 @@ public final class ParserTest extends BaseJSTypeTestCase {
     parse("foo`\\xerxes`");
     parse("bar`\\u{h}ere`");
     parse("bar`\\u{43`");
+    // an unnecessary escape before the illegal one must not hide it
+    parse("tag`\\a\\uc1`");
+    parse("tag`\\a\\xg`");
+    parse("tag`\\a\\u{zz}`");
 
     // tagged malformed template literal throws error
     parseError("foo`\\unicode", "Unterminated template literal");
     // normal template literals still throw error
     parseError("var bad = `\\unicode`;", "Hex digit expected");
+    parseError("var bad = `\\a\\uc1`;", "Hex digit expected");
   }
 
   @Test
